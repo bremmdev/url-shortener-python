@@ -1,5 +1,5 @@
 import azure.functions as func
-from flask import Flask, Response, render_template, request, redirect
+from flask import Flask, Response, render_template, request, redirect, abort
 from validate import is_valid_url, is_valid_custom_url
 import random
 import os
@@ -14,29 +14,6 @@ def return_http():
     return render_template("index.html", ctx={'disable_submit': False})
 
 
-@flask.post('/validate')
-def validate():
-    url = request.form['url'].strip()
-    custom_url = request.form['custom_url'].strip()
-
-    # valid if url is valid and custom url is empty or not invalid
-    url_valid = is_valid_url(url)
-    custom_url_valid = not custom_url or is_valid_custom_url(custom_url)
-
-    disable_submit = not url or not url_valid or not custom_url_valid
-
-    ctx = {
-        'url': url,
-        'custom_url': custom_url,
-        'disable_submit': False,
-        'errors': {
-            'url': "Invalid url" if not url_valid else None,
-            'custom_url': 'Length must be 4-12 characters (letters, numbers, - or _)' if not custom_url_valid else None
-        },
-    }
-
-    return render_template("form.html", ctx=ctx)
-
 @flask.get('/count')
 def count_urls():
     count = get_url_count()
@@ -47,12 +24,13 @@ def count_urls():
 def go(short_url):
     try:
         url, error_code = get_full_url(short_url)
+        raise Exception("test")
         return redirect(urllib.parse.unquote_plus(url))
     except Exception as e:
         if error_code == 404:
-            return Response("Not found", status=404)
+            abort(404, description="Short url not found")
         else:
-            return Response("Internal server error", status=500)
+            abort(500, description="Fetching short url failed")
 
 
 @flask.post('/shorten')
@@ -74,14 +52,19 @@ def shorten_url():
         },
     }
 
-    has_validation_errors = any(error is not None for error in ctx['errors'].values())
+    has_validation_errors = any(
+        error is not None for error in ctx['errors'].values())
 
     if has_validation_errors:
         return render_template("form.html", ctx=ctx)
 
-    ### CUSTOM URL FLOW
+    # CUSTOM URL FLOW
     if custom_url:
         existing_short_url, error_code = check_short_url(custom_url)
+
+        if error_code == 500:
+            abort(500, description="Fetching url from server failed")
+
         if existing_short_url:
             ctx["errors"]["custom_url"] = 'Custom URL already exists'
             return render_template("form.html", ctx=ctx)
@@ -90,15 +73,15 @@ def shorten_url():
         store_url(url, custom_url, True)
         count = get_url_count()
         short_link = request.host_url + 'go/' + custom_url
-        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':True}, count=count)
+        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': True}, count=count)
 
-    ### RANDOM URL FLOW   
-    
+    # RANDOM URL FLOW
+
     # check if url is already shortened
     existing_short_url, error_code = check_full_url(url)
     if existing_short_url:
         short_link = request.host_url + 'go/' + existing_short_url
-        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':False})
+        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': False})
 
     # generate random string of 6 characters
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -108,12 +91,24 @@ def shorten_url():
         if not existing_short_url:
             break
         short_url = ''.join(random.choice(chars) for i in range(6))
-    
+
     # store the url with the random string
     store_url(url, short_url, False)
     count = get_url_count()
     short_link = request.host_url + 'go/' + short_url
-    return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':True}, count=count)
+    return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': True}, count=count)
+
+
+@flask.errorhandler(404)
+def page_not_found(error):
+    if error.description != 'Short url not found':
+        error.description = "The page you are trying to visit does not exist (anymore)"
+    return render_template('error/page_not_found.html', message=error.description), 404
+
+
+@flask.errorhandler(500)
+def internal_server_error(error):
+    return render_template('error/error.html', message=error.description), 500
 
 
 app = func.WsgiFunctionApp(app=flask.wsgi_app,

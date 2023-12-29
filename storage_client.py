@@ -11,12 +11,13 @@ def get_client():
     table_client = table_service_client.get_table_client(table_name="urls")
     return table_client
 
+
 def get_url_count():
     table_client = get_client()
     try:
         entities = table_client.query_entities(
             query_filter="PartitionKey eq 'short_url'")
-        #count the number of short urls
+        # count the number of short urls
         count = 0
         for entity in entities:
             count += 1
@@ -53,6 +54,7 @@ def get_full_url(short_url):
     except Exception as e:
         return None, 500
 
+
 def check_full_url(url):
     table_client = get_client()
     try:
@@ -64,9 +66,11 @@ def check_full_url(url):
     except Exception as e:
         return None, 500
 
+
 def check_short_url(short_url):
     table_client = get_client()
     try:
+        raise Exception("test")
         entity = table_client.get_entity(
             partition_key='short_url', row_key=short_url)
         return True, 200

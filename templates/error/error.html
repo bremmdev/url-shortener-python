@@ -1,0 +1,16 @@
+{% extends 'layout.html' %} {% block content %}
+
+<h1 class="text-center text-3xl font-bold tracking-tighter text-sky-300 md:text-5xl">
+  Internal Server Error
+</h1>
+
+<div class="my-4 lg:my-6 flex flex-col gap-4 lg:gap-6">
+  <p class="text-lg">{{message}}.</p>
+  <a
+    href="/"
+    class="w-fit mx-auto focus-visible:ring-ring ring-offset-background my-4 inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    >Home</a
+  >
+</div>
+
+{% endblock %}
