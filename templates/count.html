@@ -1,4 +1,4 @@
-<div class="animate-fadeIn text-center text-slate-400 md:ml-2 -mt-8" id="url-count" hx-swap-oob="true">
+<div class="animate-fadeIn text-center text-slate-400 md:ml-2 -mt-8" id="url-count" {%if ctx and ctx.update_count %}hx-swap-oob="true"{%endif%}>
   <img
     src="/static/icons/arrow.svg"
     width="32px"

@@ -9,7 +9,7 @@ from storage_client import store_url, get_full_url, check_full_url, check_short_
 flask = Flask(__name__)
 
 
-@flask.get("/")
+@flask.get('/')
 def return_http():
     return render_template("index.html", ctx={'disable_submit': False})
 
@@ -24,13 +24,12 @@ def count_urls():
 def go(short_url):
     try:
         url, error_code = get_full_url(short_url)
-        raise Exception("test")
         return redirect(urllib.parse.unquote_plus(url))
     except Exception as e:
         if error_code == 404:
             abort(404, description="Short url not found")
         else:
-            abort(500, description="Fetching short url failed")
+            return render_template('error/redirect_error.html')
 
 
 @flask.post('/shorten')
@@ -63,14 +62,17 @@ def shorten_url():
         existing_short_url, error_code = check_short_url(custom_url)
 
         if error_code == 500:
-            abort(500, description="Fetching url from server failed")
+            abort(500)
 
         if existing_short_url:
             ctx["errors"]["custom_url"] = 'Custom URL already exists'
             return render_template("form.html", ctx=ctx)
 
         # store the url with the custom url
-        store_url(url, custom_url, True)
+        try:
+            store_url(url, custom_url, True)
+        except Exception as e:
+            abort(500)
         count = get_url_count()
         short_link = request.host_url + 'go/' + custom_url
         return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': True}, count=count)
@@ -79,6 +81,10 @@ def shorten_url():
 
     # check if url is already shortened
     existing_short_url, error_code = check_full_url(url)
+
+    if error_code == 500:
+        abort(500)
+
     if existing_short_url:
         short_link = request.host_url + 'go/' + existing_short_url
         return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': False})
@@ -93,7 +99,10 @@ def shorten_url():
         short_url = ''.join(random.choice(chars) for i in range(6))
 
     # store the url with the random string
-    store_url(url, short_url, False)
+    try:
+        store_url(url, short_url, False)
+    except Exception as e:
+        abort(500)
     count = get_url_count()
     short_link = request.host_url + 'go/' + short_url
     return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count': True}, count=count)
@@ -108,7 +117,7 @@ def page_not_found(error):
 
 @flask.errorhandler(500)
 def internal_server_error(error):
-    return render_template('error/error.html', message=error.description), 500
+    return "Internal server error", 500
 
 
 app = func.WsgiFunctionApp(app=flask.wsgi_app,

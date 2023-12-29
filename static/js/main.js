@@ -1,3 +1,20 @@
+/**********GLOBAL ERRORS ***********/
+document.addEventListener("htmx:afterRequest", function (event) {
+  if (event.detail.xhr.status === 500) {
+    document.getElementById("error").innerHTML =
+      "Something went wrong, please try again later.";
+  } else {
+    //clear any existing errors
+    document.getElementById("error").innerHTML = "";
+  }
+});
+
+document.addEventListener("htmx:beforeRequest", function (event) {
+  if(event.detail.pathInfo.requestPath === '/shorten'){
+    document.getElementById("error").innerHTML = "";
+  }
+});
+
 function handleCopyUrl() {
   showToast("Copied to clipboard!");
   const shortenedLink = document.getElementById("short-link").href;
@@ -20,7 +37,6 @@ function hideToast(delay = 0) {
 }
 
 function showTooltip() {
-  console.log('tooltip')
   const tooltip = document.getElementById("tooltip");
   tooltip.classList.remove("hidden");
 }

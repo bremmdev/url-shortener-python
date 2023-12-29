@@ -3,7 +3,6 @@ from azure.data.tables import TableServiceClient
 from azure.core.exceptions import ResourceNotFoundError
 import urllib.parse
 
-
 def get_client():
     connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
     table_service_client = TableServiceClient.from_connection_string(
@@ -27,20 +26,23 @@ def get_url_count():
 
 
 def store_url(url, short_url, is_custom):
-    table_client = get_client()
-    table_client.create_entity(entity={
-        'PartitionKey': 'short_url',
-        'RowKey': short_url,
-        'url': urllib.parse.quote_plus(url)
-    })
-
-    # we only want to store urls bidirectionally if they are not custom
-    if not is_custom:
+    try:
+        table_client = get_client()
         table_client.create_entity(entity={
-            'PartitionKey': 'url',
-            'RowKey': urllib.parse.quote_plus(url),
-            'short_url': short_url
+            'PartitionKey': 'short_url',
+            'RowKey': short_url,
+            'url': urllib.parse.quote_plus(url)
         })
+
+        # we only want to store urls bidirectionally if they are not custom
+        if not is_custom:
+            table_client.create_entity(entity={
+                'PartitionKey': 'url',
+                'RowKey': urllib.parse.quote_plus(url),
+                'short_url': short_url
+            })
+    except Exception as e:
+        raise e
 
 
 def get_full_url(short_url):
@@ -70,7 +72,6 @@ def check_full_url(url):
 def check_short_url(short_url):
     table_client = get_client()
     try:
-        raise Exception("test")
         entity = table_client.get_entity(
             partition_key='short_url', row_key=short_url)
         return True, 200
