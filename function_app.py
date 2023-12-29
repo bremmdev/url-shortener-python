@@ -88,8 +88,9 @@ def shorten_url():
 
         # store the url with the custom url
         store_url(url, custom_url, True)
+        count = get_url_count()
         short_link = request.host_url + 'go/' + custom_url
-        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False})
+        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':True}, count=count)
 
     ### RANDOM URL FLOW   
     
@@ -97,7 +98,7 @@ def shorten_url():
     existing_short_url, error_code = check_full_url(url)
     if existing_short_url:
         short_link = request.host_url + 'go/' + existing_short_url
-        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False})
+        return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':False})
 
     # generate random string of 6 characters
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -110,8 +111,9 @@ def shorten_url():
     
     # store the url with the random string
     store_url(url, short_url, False)
+    count = get_url_count()
     short_link = request.host_url + 'go/' + short_url
-    return render_template("success.html", short_link=short_link, ctx={'disable_submit': False})
+    return render_template("success.html", short_link=short_link, ctx={'disable_submit': False, 'update_count':True}, count=count)
 
 
 app = func.WsgiFunctionApp(app=flask.wsgi_app,

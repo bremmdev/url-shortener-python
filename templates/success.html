@@ -1,5 +1,9 @@
 {% include 'form.html' %}
 
+{%if ctx and ctx.update_count %}
+{% include 'count.html' %}
+{%endif%}
+
 <div class="mx-auto my-12 w-fit text-center">
   <span>Your short url:</span>
   <div class="flex gap-3">

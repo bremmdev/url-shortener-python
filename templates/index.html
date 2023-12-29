@@ -2,7 +2,7 @@
 <h1 class="text-center text-3xl font-bold tracking-tighter text-sky-300 md:text-5xl">
   URL Shortener
 </h1>
-<div class="text-center text-slate-400 md:ml-2 -mt-8" hx-get="/count" hx-trigger="load" hx-swap="outerHTML"></div>
+<div class="text-center text-slate-400 md:ml-2 -mt-8" hx-get="/count" hx-trigger="load" hx-swap="outerHTML" id="url-count" hx-swap-oob="true"></div>
 <div class="w-full">
   {% include 'form.html' %}
 </div>
