@@ -1,5 +1,5 @@
 <form class="w-full flex flex-col items-center gap-6 max-w-md mx-auto" hx-post="/shorten" hx-target="closest div"
-  hx-swap="innerHTML">
+  hx-swap="innerHTML" hx-indicator="#spinner">
   <div class="w-full flex flex-col gap-2">
     <label htmlFor="url" class="mb-1 font-bold text-slate-300">
       URL
@@ -28,8 +28,9 @@
     {%endif%}
   </div>
   <button {% if ctx.disable_submit %} disabled {% endif %}
-    class="w-full focus-visible:ring-ring ring-offset-background my-4 inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    class="w-full focus-visible:ring-ring ring-offset-background my-4 inline-flex items-center justify-center rounded-md bg-sky-300 px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     type="submit">
-    Shorten
+    <span>Shorten</span>
+    <span id="spinner" class="htmx-indicator spinner"></span>
   </button>
 </form>

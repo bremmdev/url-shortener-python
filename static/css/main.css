@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.spinner {
+  @apply hidden rounded-full animate-spin h-4 w-4 border-2 border-sky-600 ml-2 border-t-2 border-t-sky-50;
+}
+
+.htmx-request .htmx-indicator{
+  display: block;
+}
+.htmx-request.htmx-indicator{
+  display: block;
+}
