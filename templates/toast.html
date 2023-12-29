@@ -1,0 +1,8 @@
+<div
+  hx-on::load="hideToast(3000)" class="fixed bottom-12 left-6 right-6 z-10 mx-auto flex animate-slideIn items-center gap-4 rounded-md bg-sky-300 px-4 py-3 text-left text-sm text-slate-900 md:max-w-xl md:px-6 md:text-base" id="toast" hx-on:click="hideToast()">
+  <div>
+    <p class="font-semibold" id="toast-message">URL successfully shortened!</p>
+  </div>
+  <img class="ml-auto cursor-pointer" src="/static/icons/close-alert.svg" alt="close alert" width="28px"
+    height="28px" />
+</div>

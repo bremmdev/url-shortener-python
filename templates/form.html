@@ -1,0 +1,35 @@
+<form class="w-full flex flex-col items-center gap-6 max-w-md mx-auto" hx-post="/shorten" hx-target="closest div"
+  hx-swap="innerHTML">
+  <div class="w-full flex flex-col gap-2">
+    <label htmlFor="url" class="mb-1 font-bold text-slate-300">
+      URL
+    </label>
+    <input type="text" placeholder="Enter URL" id="url" name="url" value="{{ctx.url}}"
+      class="w-full rounded-md border border-slate-800 bg-inherit px-4 py-2 placeholder:opacity-50 focus:border-sky-300 focus:outline-none" />
+    {%if ctx.errors and ctx.errors.url %}
+    <span class="w-full text-center font-semibold text-rose-400">{{ctx.errors.url}}</span>
+    {%endif%}
+  </div>
+  <div class="w-full flex flex-col gap-4 relative">
+    <label htmlFor="custom_url" class="font-bold text-slate-300">
+      Custom ending (optional) <img src="/static/icons/help.svg" width="16px" height="16px" alt="help icon"
+        class="mb-[2px] hidden xs:inline" hx-on:mouseover="showTooltip()" hx-on:mouseout="hideTooltip()" />
+    </label>
+
+    <div id="tooltip"
+      class="hidden absolute rounded-lg bg-sky-200 p-3 sm:p-4 text-slate-950 -top-24 left-[7.5%] right-[7.5%] sm:left-[15%] sm:right-[15%] text-xs xs:text-sm">
+      Add a custom ending (e.g. sha.bremm.dev/go/custom_tag instead of
+      sha.bremm.dev/go/l6HYuH)
+    </div>
+    <input type="text" placeholder="Enter custom ending" id="custom_url" name="custom_url" value="{{ctx.custom_url}}"
+      class="w-full max-w-md rounded-md border border-slate-800 bg-inherit px-4 py-2 placeholder:opacity-50 focus:border-sky-300 focus:outline-none" />
+    {%if ctx.errors and ctx.errors.custom_url %}
+    <span class="w-full text-center font-semibold text-rose-400">{{ctx.errors.custom_url}}</span>
+    {%endif%}
+  </div>
+  <button {% if ctx.disable_submit %} disabled {% endif %}
+    class="w-full focus-visible:ring-ring ring-offset-background my-4 inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    type="submit">
+    Shorten
+  </button>
+</form>

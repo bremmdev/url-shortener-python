@@ -1,0 +1,12 @@
+.git*
+.vscode
+__azurite_db*__.json
+__blobstorage__
+__queuestorage__
+local.settings.json
+test
+.venv
+package-lock.json
+package.json
+tailwind.config.js
+node_modules

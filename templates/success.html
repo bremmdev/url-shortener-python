@@ -1,0 +1,18 @@
+{% include 'form.html' %}
+
+<div class="mx-auto my-12 w-fit text-center">
+  <span>Your short url:</span>
+  <div class="flex gap-3">
+    <a href="{{short_link}}"
+      class="my-1 block border-b border-b-sky-300 font-bold selection:bg-sky-300 hover:text-sky-300" target="_blank"
+      id="short-link">
+      {{short_link}}
+    </a>
+    <button type="button" hx-on:click="handleCopyUrl()">
+      <img src="/static/icons/copy.svg" width="16px" height="16px" class="transition-transform hover:scale-110"
+        alt="copy icon" />
+    </button>
+  </div>
+</div>
+
+{% include 'toast.html' %}
