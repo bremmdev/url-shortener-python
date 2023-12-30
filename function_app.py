@@ -24,6 +24,8 @@ def count_urls():
 def go(short_url):
     try:
         url, error_code = get_full_url(short_url)
+        if not url.startswith('http://') and not url.startswith('https://'):
+            url = 'https://' + url
         return redirect(urllib.parse.unquote_plus(url))
     except Exception as e:
         if error_code == 404:

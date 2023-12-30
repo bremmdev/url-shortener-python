@@ -5,12 +5,14 @@ document.addEventListener("htmx:afterRequest", function (event) {
       "Something went wrong, please try again later.";
   } else {
     //clear any existing errors
-    document.getElementById("error").innerHTML = "";
+    if (document.getElementById("error") !== null) {
+      document.getElementById("error").innerHTML = "";
+    }
   }
 });
 
 document.addEventListener("htmx:beforeRequest", function (event) {
-  if(event.detail.pathInfo.requestPath === '/shorten'){
+  if (event.detail.pathInfo.requestPath === "/shorten") {
     document.getElementById("error").innerHTML = "";
   }
 });
